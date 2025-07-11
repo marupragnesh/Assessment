@@ -25,12 +25,12 @@ public class ProductController {
     }
 
 
-    @GetMapping("/api/products")
+    @GetMapping("/product")
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
 
-    @PostMapping("/api/addproduct")
+    @PostMapping("/product")
     public ResponseEntity<?> createProduct(@Valid @RequestBody Product product, BindingResult result) {
         if (result.hasErrors()) {
             // return validation errors

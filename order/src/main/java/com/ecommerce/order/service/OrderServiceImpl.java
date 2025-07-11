@@ -3,9 +3,11 @@ package com.ecommerce.order.service;
 import com.ecommerce.order.exception.InsufficientStockException;
 import com.ecommerce.order.exception.PaymentFailedException;
 import com.ecommerce.order.exception.ResourceNotFoundException;
+import com.ecommerce.order.exception.UserNotFoundException;
 import com.ecommerce.order.model.*;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.repository.ProductRepository;
+import com.ecommerce.order.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,21 +20,35 @@ public class OrderServiceImpl implements OrderService {
 
     private final ProductRepository productRepository;
     private final OrderRepository orderRepository;
+    private final UserRepository userRepository;
 
     /**
      * Constructor for OrderServiceImpl.
      *
      * @param productRepository the repository for product operations
      * @param orderRepository   the repository for order operations
+     * @param userRepository
      */
-    public OrderServiceImpl(ProductRepository productRepository, OrderRepository orderRepository) {
+    public OrderServiceImpl(ProductRepository productRepository, OrderRepository orderRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     @Transactional
     public Order placeOrder(Long productId, String userId, int quantity) {
+        if (userId == null || userId.trim().isEmpty()) {
+            throw new IllegalArgumentException("User ID cannot be null or empty");
+        }
+        Optional<User> user = userRepository.findByUserId(userId);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("User not found: " + userId);
+        }
+
+        if (quantity <= 0) {
+            throw new IllegalArgumentException("Quantity must be greater than zero");
+        }
         Optional<Product> optionalProduct = productRepository.findById(productId);
 // check product is available or not
         if (optionalProduct.isEmpty()) {
