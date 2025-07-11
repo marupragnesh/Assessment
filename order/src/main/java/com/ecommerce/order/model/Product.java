@@ -21,8 +21,9 @@ public class Product {
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private double price;
     @NotNull(message = "Stock is required")
-    @Min(value = 0, message = "Stock cannot be negative")
+    @Min(value = 1, message = "Stock at least 1 is required")
     private int stock;
+    @Column(updatable = false)
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
@@ -84,6 +85,16 @@ public class Product {
 
     public void setUpdatedDate(LocalDateTime updatedDate) {
         this.updatedDate = updatedDate;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdDate = LocalDateTime.now();
+        this.updatedDate = LocalDateTime.now();
+    }
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedDate = LocalDateTime.now(); // don't touch createdAt
     }
 
     @Override
