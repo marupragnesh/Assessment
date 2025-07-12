@@ -4,7 +4,10 @@ import com.ecommerce.order.exception.InsufficientStockException;
 import com.ecommerce.order.exception.PaymentFailedException;
 import com.ecommerce.order.exception.ResourceNotFoundException;
 import com.ecommerce.order.exception.UserNotFoundException;
-import com.ecommerce.order.model.*;
+import com.ecommerce.order.model.Order;
+import com.ecommerce.order.model.OrderStatus;
+import com.ecommerce.order.model.Product;
+import com.ecommerce.order.model.User;
 import com.ecommerce.order.repository.OrderRepository;
 import com.ecommerce.order.repository.ProductRepository;
 import com.ecommerce.order.repository.UserRepository;
@@ -12,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -22,13 +26,6 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
 
-    /**
-     * Constructor for OrderServiceImpl.
-     *
-     * @param productRepository the repository for product operations
-     * @param orderRepository   the repository for order operations
-     * @param userRepository
-     */
     public OrderServiceImpl(ProductRepository productRepository, OrderRepository orderRepository, UserRepository userRepository) {
         this.productRepository = productRepository;
         this.orderRepository = orderRepository;
@@ -41,7 +38,7 @@ public class OrderServiceImpl implements OrderService {
         if (userId == null || userId.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }
-        // check user is present or not for buying product so i know that which user buy which product
+
         Optional<User> user = userRepository.findByUserId(userId);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User not found: " + userId);
@@ -57,14 +54,10 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
-
 // if available than get product
         Product product = optionalProduct.get();
         // check single thread access and check stock of product
         synchronized (this) {
-//            if (product.getStock() < quantity) {
-//                throw new RuntimeException("Insufficient stock");
-//            }
             if (product.getStock() < quantity) {
                 throw new InsufficientStockException("Only " + product.getStock() + " items left in stock");
             }
@@ -91,4 +84,10 @@ public class OrderServiceImpl implements OrderService {
 
         return orderRepository.save(order);
     }
+
+    @Override
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
+
 }

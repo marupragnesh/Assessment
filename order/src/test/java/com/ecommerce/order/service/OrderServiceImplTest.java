@@ -43,7 +43,7 @@ public class OrderServiceImplTest {
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // Setup dummy user
-        User user = new User("1f", "user123", "Test", "user@test.com");
+        User user = new User("1L", "user123", "Test", "user@test.com");
         when(userRepository.findByUserId("user123")).thenReturn(Optional.of(user));
 
         // Simulate saving the order
