@@ -41,6 +41,7 @@ public class OrderServiceImpl implements OrderService {
         if (userId == null || userId.trim().isEmpty()) {
             throw new IllegalArgumentException("User ID cannot be null or empty");
         }
+        // check user is present or not for buying product so i know that which user buy which product
         Optional<User> user = userRepository.findByUserId(userId);
         if (user.isEmpty()) {
             throw new UserNotFoundException("User not found: " + userId);
@@ -65,7 +66,7 @@ public class OrderServiceImpl implements OrderService {
 //                throw new RuntimeException("Insufficient stock");
 //            }
             if (product.getStock() < quantity) {
-                throw new InsufficientStockException("Only " + product.getStock() + " left in stock.");
+                throw new InsufficientStockException("Only " + product.getStock() + " items left in stock");
             }
 
 // if stock available than save order and update stock
@@ -77,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
         boolean paymentSuccess = new Random().nextBoolean();
 
         if (!paymentSuccess) {
-            throw new PaymentFailedException("Payment failed");
+            throw new PaymentFailedException("Payment failed. Order not placed.");
         }
 
         Order order = new Order();

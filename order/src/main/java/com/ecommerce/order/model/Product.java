@@ -30,8 +30,7 @@ public class Product {
     public Product() {
     }
 
-    public Product(Long id, String name, double price, int stock, LocalDateTime createdDate, LocalDateTime updatedDate) {
-        Id = id;
+    public Product(String name, double price, int stock, LocalDateTime createdDate, LocalDateTime updatedDate) {
         this.name = name;
         this.price = price;
         this.stock = stock;

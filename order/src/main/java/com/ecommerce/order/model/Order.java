@@ -31,8 +31,7 @@ public class Order {
     public Order() {
     }
 
-    public Order(Long id, String userId, int quantity, double totalAmount, OrderStatus status, LocalDateTime createdAt, Product product) {
-        this.id = id;
+    public Order(String userId, int quantity, double totalAmount, OrderStatus status, LocalDateTime createdAt, Product product) {
         this.userId = userId;
         this.quantity = quantity;
         this.totalAmount = totalAmount;
